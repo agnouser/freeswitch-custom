@@ -13,6 +13,12 @@
       <node type="deny" cidr="192.168.42.0/24"/>
       <node type="allow" cidr="192.168.42.42/32"/>
     </list>
+	  
+    <list name="loopback.auto" default="allow">
+      <node type="deny" cidr="192.168.42.0/24"/>
+      <node type="allow" cidr="xxx.xxx.xxx.xxx/32"/>
+    </list>
+
 
     <!--
 	This will traverse the directory adding all users
