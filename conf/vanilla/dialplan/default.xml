@@ -92,48 +92,16 @@
       </condition>
     </extension>
 
-    <extension name="global-intercept">
-      <condition field="destination_number" expression="^886$">
-	<action application="answer"/>
-	<action application="intercept" data="${hash(select/${domain_name}-last_dial_ext/global)}"/>
-	<action application="sleep" data="2000"/>
-      </condition>
-    </extension>
+    
 
-    <extension name="group-intercept">
-      <condition field="destination_number" expression="^\*8$">
-	<action application="answer"/>
-	<action application="intercept" data="${hash(select/${domain_name}-last_dial_ext/${callgroup})}"/>
-	<action application="sleep" data="2000"/>
-      </condition>
-    </extension>
-
-    <extension name="intercept-ext">
-      <condition field="destination_number" expression="^\*\*(\d+)$">
-	<action application="answer"/>
-	<action application="intercept" data="${hash(select/${domain_name}-last_dial_ext/$1)}"/>
-	<action application="sleep" data="2000"/>
-      </condition>
-    </extension>
-
-    <extension name="redial">
-      <condition field="destination_number" expression="^(redial|870)$">
-	<action application="transfer" data="${hash(select/${domain_name}-last_dial/${caller_id_number})}"/>
-      </condition>
-    </extension>
+    
 
     <extension name="global" continue="true">
       <condition field="${call_debug}" expression="^true$" break="never">
 	<action application="info"/>
       </condition>
 
-      <condition field="${default_password}" expression="^1234$" break="never">
-	<action application="log" data="CRIT WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING "/>
-	<action application="log" data="CRIT Open $${conf_dir}/vars.xml and change the default_password."/>
-	<action application="log" data="CRIT Once changed type 'reloadxml' at the console."/>
-	<action application="log" data="CRIT WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING "/>
-	<action application="sleep" data="10000"/>
-      </condition>
+     
       <!--
 	  This is an example of how to auto detect if telephone-event is missing and activate inband detection
       -->
@@ -183,21 +151,7 @@
 	Snom button demo, call 9000 to make button 2 mapped to transfer the current call to a conference
     -->
 
-    <extension name="snom-demo-2">
-      <condition field="destination_number" expression="^9001$">
-	<action application="eval" data="${snom_bind_key(2 off DND ${sip_from_user} ${sip_from_host} ${sofia_profile_name} message notused)}"/>
-	<action application="transfer" data="3000"/>
-      </condition>
-    </extension>
-
-    <extension name="snom-demo-1">
-      <condition field="destination_number" expression="^9000$">
-	<!--<key> <light> <label> <user> <host> <profile> <action_name> <action>-->
-	<action application="eval" data="${snom_bind_key(2 on DND ${sip_from_user} ${sip_from_host} ${sofia_profile_name} message api+uuid_transfer ${uuid} 9001)}"/>
-	<action application="playback" data="$${hold_music}"/>
-      </condition>
-    </extension>
-
+   
     <extension name="eavesdrop">
       <condition field="destination_number" expression="^88(\d{4})$|^\*0(.*)$">
 	<action application="answer"/>
@@ -215,47 +169,8 @@
       </condition>
     </extension>
 
-    <extension name="call_return">
-      <condition field="destination_number" expression="^\*69$|^869$|^lcr$">
-	<action application="transfer" data="${hash(select/${domain_name}-call_return/${caller_id_number})}"/>
-      </condition>
-    </extension>
-
-    <extension name="del-group">
-      <condition field="destination_number" expression="^80(\d{2})$">
-	<action application="answer"/>
-	<action application="group" data="delete:$1@${domain_name}:${sofia_contact(${sip_from_user}@${domain_name})}"/>
-	<action application="gentones" data="%(1000, 0, 320)"/>
-      </condition>
-    </extension>
-
-    <extension name="add-group">
-      <condition field="destination_number" expression="^81(\d{2})$">
-	<action application="answer"/>
-	<action application="group" data="insert:$1@${domain_name}:${sofia_contact(${sip_from_user}@${domain_name})}"/>
-	<action application="gentones" data="%(1000, 0, 640)"/>
-      </condition>
-    </extension>
-
-    <extension name="call-group-simo">
-      <condition field="destination_number" expression="^82(\d{2})$">
-	<action application="bridge" data="{leg_timeout=15,ignore_early_media=true}${group(call:$1@${domain_name})}"/>
-      </condition>
-    </extension>
-
-    <extension name="call-group-order">
-      <condition field="destination_number" expression="^83(\d{2})$">
-	<action application="bridge" data="{leg_timeout=15,ignore_early_media=true}${group(call:$1@${domain_name}:order)}"/>
-      </condition>
-    </extension>
-
-    <extension name="extension-intercom">
-      <condition field="destination_number" expression="^8(10[01][0-9])$">
-	<action application="set" data="dialed_extension=$1"/>
-	<action application="export" data="sip_auto_answer=true"/>
-	<action application="bridge" data="user/${dialed_extension}@${domain_name}"/>
-      </condition>
-    </extension>
+    
+    
 
     <!--
 	 dial the extension (1000-1019) for 30 seconds and go to voicemail if the
@@ -291,38 +206,8 @@
       </condition>
     </extension>
 
-    <extension name="Local_Extension_Skinny">
-      <condition field="destination_number" expression="^(11[01][0-9])$">
-	<action application="set" data="dialed_extension=$1"/>
-	<action application="export" data="dialed_extension=$1"/>
-	<action application="set" data="call_timeout=30"/>
-	<action application="set" data="hangup_after_bridge=true"/>
-	<action application="set" data="continue_on_fail=true"/>
-        <action application="bridge" data="skinny/internal/${destination_number}"/>
-	<action application="answer"/>
-	<action application="sleep" data="1000"/>
-	<action application="bridge" data="loopback/app=voicemail:default ${domain_name} ${dialed_extension}"/>
-      </condition>
-    </extension>
-
-    <extension name="group_dial_sales">
-      <condition field="destination_number" expression="^2000$">
-	<action application="bridge" data="${group_call(sales@${domain_name})}"/>
-      </condition>
-    </extension>
-
-    <extension name="group_dial_support">
-      <condition field="destination_number" expression="^2001$">
-	<action application="bridge" data="group/support@${domain_name}"/>
-      </condition>
-    </extension>
-
-    <extension name="group_dial_billing">
-      <condition field="destination_number" expression="^2002$">
-	<action application="bridge" data="group/billing@${domain_name}"/>
-      </condition>
-    </extension>
-
+    
+    
     <!-- voicemail operator extension -->
     <extension name="operator">
       <condition field="destination_number" expression="^(operator|0)$">
@@ -470,56 +355,9 @@
 	At anytime the participant can dial *2 to bridge directly to the boss.
 	All other callers are then hung up on.
     -->
-    <extension name="mad_boss_intercom">
-      <condition field="destination_number" expression="^0912$">
-	<action application="set" data="conference_auto_outcall_caller_id_name=Mad Boss2"/>
-	<action application="set" data="conference_auto_outcall_caller_id_number=0912"/>
-	<action application="set" data="conference_auto_outcall_timeout=60"/>
-	<action application="set" data="conference_utils_auto_outcall_flags=mute"/>
-	<action application="set" data="conference_auto_outcall_prefix={sip_auto_answer=true,execute_on_answer='bind_meta_app 2 a s1 transfer::intercept:${uuid} inline'}"/>
-	<action application="set" data="sip_exclude_contact=${network_addr}"/>
-	<action application="conference_set_auto_outcall" data="loopback/9664"/>
-	<action application="conference" data="madboss_intercom2@default+flags{endconf|deaf}"/>
-      </condition>
-    </extension>
+   
 
-    <!--This extension will start a conference and invite several people upon entering -->
-    <extension name="mad_boss">
-      <condition field="destination_number" expression="^0913$">
-	<!--These params effect the outcalls made once you join-->
-	<action application="set" data="conference_auto_outcall_caller_id_name=Mad Boss"/>
-	<action application="set" data="conference_auto_outcall_caller_id_number=0911"/>
-	<action application="set" data="conference_auto_outcall_timeout=60"/>
-	<action application="set" data="conference_utils_auto_outcall_flags=none"/>
-	<!--<action application="set" data="conference_auto_outcall_announce=say:You have been called into an emergency conference"/>-->
-	<!--Add as many of these as you need, These are the people you are going to call-->
-	<action application="conference_set_auto_outcall" data="loopback/9664"/>
-	<action application="conference" data="madboss3@default"/>
-      </condition>
-    </extension>
-
-    <!-- a sample IVR  -->
-    <extension name="ivr_demo">
-      <condition field="destination_number" expression="^5000$">
-        <action application="answer"/>
-        <action application="sleep" data="2000"/>
-	<action application="ivr" data="demo_ivr"/>
-      </condition>
-    </extension>
-
-    <!-- Create a conference on the fly and pull someone in at the same time. -->
-    <extension name="dynamic_conference">
-      <condition field="destination_number" expression="^5001$">
-	<action application="conference" data="bridge:mydynaconf:sofia/${use_profile}/1234@conference.freeswitch.org"/>
-      </condition>
-    </extension>
-
-    <extension name="rtp_multicast_page">
-      <condition field="destination_number" expression="^pagegroup$|^7243$">
-	<action application="answer"/>
-	<action application="esf_page_group"/>
-      </condition>
-    </extension>
+   
 
     <!--
 	 Parking extensions... transferring calls to 5900 will park them in a queue.
@@ -545,24 +383,8 @@
 	 Valet park retrieval, works with valet_park extension below.
 	 Retrieve a valet parked call by dialing 6000 + park number + #
     -->
-    <extension name="valet_park">
-      <condition field="destination_number" expression="^(6000)$">
-	<action application="answer"/>
-	<action application="valet_park" data="valet_parking_lot ask 1 11 10000 ivr/ivr-enter_ext_pound.wav"/>
-      </condition>
-    </extension>
-
-    <!--
-	 Valet park 6001-6099.  Blind x-fer to 6001, 6002, etc. to valet park the call.
-	 Dial 6001, 6002, etc. to retrieve a call that is already valet parked.
-	 After call is retrieved, park extension is free for another call.
-    -->
-    <extension name="valet_park">
-      <condition field="destination_number" expression="^((?!6000)60\d{2})$">
-	<action application="answer"/>
-	<action application="valet_park" data="valet_parking_lot $1"/>
-      </condition>
-    </extension>
+    
+    
 
 
     <!--
