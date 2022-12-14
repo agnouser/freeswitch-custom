@@ -13,7 +13,7 @@
 <include>
   <context name="default">
 	  
-<!-- <X-PRE-PROCESS cmd="exec" data="curl http://localhost/api/dialplan"/> -->	  
+ 
 
     <extension name="unloop">
       <condition field="${unroll_loops}" expression="^true$"/>
